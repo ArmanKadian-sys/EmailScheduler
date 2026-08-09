@@ -11,7 +11,9 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "@getbrevo/brevo": "^6.0.2",
     "@neondatabase/serverless": "^1.1.0",
+    "@sendgrid/mail": "^8.1.6",
     "body-parser": "^2.3.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
