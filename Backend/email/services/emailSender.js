@@ -3,9 +3,6 @@ dotenv.config();
 import { BrevoClient } from "@getbrevo/brevo";
 
 
-
-
-
 async function main() {
     const client = new BrevoClient({
         apiKey: process.env.BREVO_API_KEY,

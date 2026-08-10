@@ -1,4 +1,4 @@
-import email_pool from "../services/db.js";
+import db_pool from "../services/db.js";
 
 let query = `
   CREATE TABLE IF NOT EXISTS emails (
@@ -12,7 +12,7 @@ let query = `
   );
 `;
 
-const result=await email_pool.query(query);
+const result=await db_pool.query(query);
 
 export default result;
 

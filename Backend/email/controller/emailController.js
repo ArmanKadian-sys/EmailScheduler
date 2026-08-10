@@ -1,4 +1,4 @@
-import email_pool from "../services/db.js"
+import db_pool from "../services/db.js"
 
 
 const getEmails=async(req, res, next)=>{
@@ -7,7 +7,7 @@ const getEmails=async(req, res, next)=>{
  let result;
 
  try{
-  result = await email_pool.query(query)
+  result = await db_pool.query(query)
  }
  catch(error){
   res.status(500).json({message: error})
@@ -22,12 +22,13 @@ const getEmails=async(req, res, next)=>{
 
 const postEmail=async(req, res, next)=>{
   const {sendTo, sendFrom, content, subject}=req.body;
-  const query=`INSERT INTO emails (sendTo, sendFrom, content, subject) VALUES ('${sendTo}', '${sendFrom}', '${content}', '${subject}')`;
+  const query=`INSERT INTO emails (sendTo, sendFrom, content, subject) VALUES ('${sendTo}', '${sendFrom}', '${content}', '${subject}') ORDER BY sendAt ASC`;
 
  let result;
+ 
 
  try{
-  result = await email_pool.query(query)
+  result = await db_pool.query(query)
  }
  catch(error){
   res.status(500).json({message: error})

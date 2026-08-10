@@ -18,6 +18,17 @@
   "homepage": "https://github.com/ArmanKadian-sys/EmailScheduler#readme",
   "description": "",
   "dependencies": {
-    "express": "^5.2.1"
+    "@getbrevo/brevo": "^6.0.2",
+    "@neondatabase/serverless": "^1.1.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.1",
+    "pg": "^8.23.0"
   }
 }
