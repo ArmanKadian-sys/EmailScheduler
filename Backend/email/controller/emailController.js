@@ -1,5 +1,5 @@
-import db_pool from "../services/db.js"
-
+import db_pool from "../../services/db.js"
+import {wss} from "../ws.js";
 
 const getEmails=async(req, res, next)=>{
  const query='SELECT * FROM emails';
@@ -21,8 +21,8 @@ const getEmails=async(req, res, next)=>{
 
 
 const postEmail=async(req, res, next)=>{
-  const {sendTo, sendFrom, content, subject}=req.body;
-  const query=`INSERT INTO emails (sendTo, sendFrom, content, subject) VALUES ('${sendTo}', '${sendFrom}', '${content}', '${subject}') ORDER BY sendAt ASC`;
+  const {sendTo, sendFrom, content, subject, sendAt}=req.body;
+  const query=`INSERT INTO emails (sendTo, sendFrom, content, subject, sendAt) VALUES ('${sendTo}', '${sendFrom}', '${content}', '${subject}', '${sendAt}')`;
 
  let result;
  
@@ -34,6 +34,8 @@ const postEmail=async(req, res, next)=>{
   res.status(500).json({message: error})
  }
 
+
+ wss.
  res.status(201).json({result})
 }
 

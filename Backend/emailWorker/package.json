@@ -1,7 +1,7 @@
 {
-  "name": "email",
+  "name": "emailworker",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,15 +13,10 @@
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
     "@neondatabase/serverless": "^1.1.0",
-    "body-parser": "^2.3.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.9.1",
-    "pg": "^8.22.0",
+    "pg": "^8.23.0",
     "ws": "^8.21.3"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.31.10"
   }
 }

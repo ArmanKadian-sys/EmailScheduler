@@ -4,6 +4,8 @@ import result from "./models/Email.js";
 import cors from "cors";
 import emailRouter from "./routes/emailrouter.js";
 import bodyParser from "body-parser";
+import http from 'http';
+import { attachWss } from './ws.js';
 
 const app=express();
 
@@ -14,7 +16,11 @@ app.use(bodyParser.json());
 app.use("/emails", emailRouter);
 
 
-app.listen(3000, ()=>{
+
+const server = http.createServer(app);
+attachWss(server);
+
+server.listen(3000, ()=>{
   console.log("Email has been connected: ", result);
   console.log("Email server started at 3000");
 })

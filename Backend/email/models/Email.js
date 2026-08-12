@@ -1,4 +1,4 @@
-import db_pool from "../services/db.js";
+import db_pool from "../../services/db.js";
 
 let query = `
   CREATE TABLE IF NOT EXISTS emails (
