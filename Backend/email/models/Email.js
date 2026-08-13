@@ -8,7 +8,8 @@ let query = `
     content TEXT NOT NULL,
     subject TEXT NOT NULL, 
     sendAt TIMESTAMPTZ,
-    createdAt TIMESTAMPTZ DEFAULT NOW()
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    sent BOOLEAN DEFAULT false
   );
 `;
 

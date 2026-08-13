@@ -1,21 +1,20 @@
-import WebSocket from "ws";
+import { connection } from "./services/connection.js";
+import { Queue } from "bullmq";
+import db_pool from "../services/db.js";
+import emailExtracter from "./services/emailExtracter.js";
 
-const socket = new WebSocket("ws://localhost:3000/ws");
 
-socket.on("open", () => {
-    console.log("Connected to main server");
 
-    socket.send("Worker server connected");
+const notificationQueue = new Queue("notifications", {
+    connection
 });
 
-socket.on("message", (data) => {
-    console.log("Message from main server:", data.toString());
-});
+const emailQueue= new EmailQueue("emails", {
+    connection
+})
 
-socket.on("close", () => {
-    console.log("Connection to main server closed");
-});
 
-socket.on("error", (err) => {
-    console.error("WebSocket error:", err);
-});
+
+emailQueue.add("email-to-send", {
+    email
+})

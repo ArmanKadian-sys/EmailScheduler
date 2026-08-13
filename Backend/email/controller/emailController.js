@@ -1,5 +1,5 @@
 import db_pool from "../../services/db.js"
-import {wss} from "../ws.js";
+import { notificationQueue } from "../services/notificationQueue.js";
 
 const getEmails=async(req, res, next)=>{
  const query='SELECT * FROM emails';
@@ -19,14 +19,12 @@ const getEmails=async(req, res, next)=>{
  
 }
 
-
 const postEmail=async(req, res, next)=>{
   const {sendTo, sendFrom, content, subject, sendAt}=req.body;
   const query=`INSERT INTO emails (sendTo, sendFrom, content, subject, sendAt) VALUES ('${sendTo}', '${sendFrom}', '${content}', '${subject}', '${sendAt}')`;
 
  let result;
  
-
  try{
   result = await db_pool.query(query)
  }
@@ -35,7 +33,19 @@ const postEmail=async(req, res, next)=>{
  }
 
 
- wss.
+ try{
+  const job = await notificationQueue.add("new-email", 
+    {
+      sendAt
+    }
+   )
+
+   console.log("Job added successfully");
+  }catch(error){
+    res.status(500).json({message:"Please try again, server error"});
+  }
+  
+
  res.status(201).json({result})
 }
 
