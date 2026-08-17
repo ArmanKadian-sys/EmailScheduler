@@ -10,7 +10,6 @@ dotenv.config({
     path: path.join(__dirname, "../../.env")
 });
 
-
 const connection = new IORedis({
     username: 'default',
     password: process.env.REDIS_PASSWORD,
@@ -22,7 +21,6 @@ const connection = new IORedis({
 connection.on("error", (err) => {
     console.error("Redis error:", err);
 });
-
 
 console.log("Connected to Redis:", connection.isReady);
 
