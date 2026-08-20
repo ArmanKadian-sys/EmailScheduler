@@ -1,34 +1,32 @@
 import db_pool from "../../services/db.js";
 import { connection } from "./connection.js";
 
-const emailExtracter = async(db_pool)=>{
+const emailExtracter = async (db_pool) => {
 
-const query =`SELECT *
+  const query = `SELECT *
 FROM emails
 ORDER BY sendAt ASC
 LIMIT 50;`
 
-let result;
+  let result;
 
-try{
-  result= await db_pool.query(query);
-}
-catch(error){
-  throw new Error(error);
-}
-
-
-const start= result.rows[0].sendat;
-const end = result.rows[result.rows.length - 1].sendat;
-
-result=result.rows;
+  try {
+    result = await db_pool.query(query);
+  }
+  catch (error) {
+    throw new Error(error);
+  }
 
 
-console.log(start)
-console.log(end);
+  const start = result.rows[0].sendat;
+  const end = result.rows[result.rows.length - 1].sendat;
 
 
-return {start, end, result};
+
+  result = result.rows;
+
+
+  return { start, end, result };
 
 }
 
