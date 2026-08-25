@@ -1,5 +1,4 @@
-import emailExtracter from "./emailExtracter";
-import { connection } from "./connection";
+import emailExtracter from "./emailExtracter.js";
 import { Queue } from "bullmq";
 
 const toReload = async (db_pool, connection) => {
@@ -9,6 +8,7 @@ const toReload = async (db_pool, connection) => {
   })
 
   const toggle = await connection.get("toggle");
+  console.log("this is the value of toggle", toggle);
 
   let start, end, result = null;
 
@@ -16,12 +16,13 @@ const toReload = async (db_pool, connection) => {
     ({ start, end, result } = await emailExtracter(db_pool));
   }
 
-  result.rows.forEach(email => {
 
-    await emailQueue.add(`email_${email.id}`, email);
 
-  });;
-
+  await Promise.all(
+    result.map(email =>
+      emailQueue.add(`email_${email.id}`, email)
+    )
+  );
 
 
 

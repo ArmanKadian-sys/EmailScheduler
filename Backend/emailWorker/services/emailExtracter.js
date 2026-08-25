@@ -1,7 +1,5 @@
-import db_pool from "../../services/db.js";
-import { connection } from "./connection.js";
-
 const emailExtracter = async (db_pool) => {
+  console.log("Email Extractor called");
 
   const query = `SELECT *
 FROM emails
