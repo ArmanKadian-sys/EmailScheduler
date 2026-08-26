@@ -7,32 +7,29 @@ import toReload from "./toReload.js";
 const notificationQueue = new Queue("notifications", {
   connection
 });
+let toggler;
 
-const toggler = new Worker("notifications", async (job) => {
+toggler = new Worker("notifications", async (job) => {
 
 
-  const current = new Date(job.data.sendAt).getTime();
-  await connection.del("start");
-  await connection.del("end");
-  const startString = await connection.get("start");
   const endString = await connection.get("end");
+  const currentString = job.data.sendAt;
 
-  console.log("This is the Toggler Worker and this is the notificaiton data", job.data.sendAt);
-
-  //Condition if the email queue is empty and then the notification arrived from the email server
-  if (!startString || !endString) {
+  // Queue's first email, no end string means the queue is empty.
+  if (!endString) {
     await connection.set("toggle", "1");
-    await connection.set("start", job.data.sendAt);
-    await connection.set("end", job.data.sendAt);
     toReload(db_pool, connection);
+    await toggler.pause();
     return;
   }
 
-  const start = new Date(startString).getTime();
-  const end = new Date(endString).getTime();
 
-  if (start <= current && current <= end) {
+  const end = new Date(endString).getTime();
+  const current = new Date(currentString).getTime();
+
+  if (current < end) {
     await connection.set("toggle", "1");
+    await toggler.pause();
   }
 
 
