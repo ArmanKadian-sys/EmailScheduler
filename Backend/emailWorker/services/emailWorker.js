@@ -14,61 +14,31 @@ let emailWorker;
 
 emailWorker = new Worker("emails", async (job) => {
 
-  //first email
-  let endFirst = await connection.get("end")
-
-  if (!endFirst) {
-    await connection.set("end", endFirst);
-    toggler.resume()
-  }
-
-
   // Sending Email
   const emailTime = new Date(job.data.sendat).getTime();
   const now = new Date().getTime();
   const toHold = emailTime - now;
 
-  await new Promise((resolve) => {
-    console.log("Promise pending till", toHold);
-    setTimeout(() => {
-      resolve();
-    }, toHold);
-  })
-
-  emailSender(job.data);
-
-
-  // Further Checks
-
-  const toggle = await connection.get("toggle");
-  let end;
-
-  if (toggle == "1") {
-    end = await toReload(db_pool, connection);
-    await connection.set("end", end);
-    await connection.set("toggle", 0);
-    toggler.resume();
+  if (toHold > 0) {
+    await connection.set("holding", emailTime);
+    await new Promise((resolve) => {
+      console.log("Promise pending till", toHold);
+      setTimeout(() => {
+        resolve();
+      }, toHold);
+    })
 
   }
 
+  await connection.set("holding", null);
 
+  await emailSender(job.data);
 
 
 }, { connection });
 
 
 emailWorker.on("completed", async (job) => {
-  const { waiting, active } = await emailQueue.getJobCounts();
-  if (waiting == 0) {
-    let end = await toReload(db_pool, connection);
-    if (end) {
-      await connection.set("end", end);
-    }
-    else {
-      await connection.del("end");
-    }
-  }
-
   console.log(`This Job has been completed with id:`, job.data.id);
 });
 
