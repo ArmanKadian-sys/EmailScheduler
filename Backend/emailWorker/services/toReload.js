@@ -11,11 +11,14 @@ const toReload = async (db_pool, connection) => {
 
   ({ start, end, result } = await emailExtracter(db_pool));
 
-  await Promise.all(
-    result.map(email =>
-      emailQueue.add(`email_${email.id}`, email)
-    )
-  );
+  if (result) {
+    await Promise.all(
+      result.map(email =>
+        emailQueue.add(`email_${email.id}`, email)
+      )
+    );
+  }
+
 
   return end;
 

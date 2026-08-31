@@ -1,8 +1,6 @@
 import { Worker, Queue } from "bullmq";
 import { connection } from "./connection.js";
-import db_pool from "../../services/db.js";
-import toReload from "./toReload.js";
-import { emailWorker } from "./emailWorker.js";
+
 
 const notificationQueue = new Queue("notifications", {
   connection
@@ -14,19 +12,22 @@ toggler = new Worker("notifications", async (job) => {
 
   const endString = await connection.get("end");
   const currentString = job.data.sendAt;
+  console.log("toggler ran with endString", endString);
 
-  // Queue's first email, no end string means the queue is empty.
   if (!endString) {
-    await connection.set("toggle", { status: 1, time: endString });
-    await toggler.pause(); // pause until the queue is Reloaded
+    await connection.set("toggle", { status: 1, end: endString });
+    console.log("toggler ran for first email and now paused");
+    await toggler.pause();
+
     return;
   }
   const end = new Date(endString).getTime();
   const current = new Date(currentString).getTime();
 
   if (current < end) {
-    await connection.set("toggle", { status: 1, time: endString });
+    await connection.set("toggle", { status: 1, end: endString });
     await toggler.pause();
+    return;
   }
 
 

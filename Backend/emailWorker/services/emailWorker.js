@@ -1,16 +1,14 @@
 import { Worker, Queue } from "bullmq";
 import { connection } from "./connection.js";
 import { emailSender } from "./emailSender.js";
-import toReload from "./toReload.js";
 import db_pool from "../../services/db.js";
-import { connection } from "./connection.js";
-import { toggler } from "./Toggler.js";
-import { Queue } from "bullmq";
+import markSent from "./markSent.js"
 
 
 
 const emailQueue = new Queue("email", { connection });
 let emailWorker;
+let cancelJob;
 
 emailWorker = new Worker("emails", async (job) => {
 
@@ -18,22 +16,34 @@ emailWorker = new Worker("emails", async (job) => {
   const emailTime = new Date(job.data.sendat).getTime();
   const now = new Date().getTime();
   const toHold = emailTime - now;
+  let cancelled = false;
 
   if (toHold > 0) {
     await connection.set("holding", emailTime);
     await new Promise((resolve) => {
       console.log("Promise pending till", toHold);
-      setTimeout(() => {
+      let timer = setTimeout(() => {
         resolve();
       }, toHold);
-    })
 
+
+      cancelJob = () => {
+        cancelled = true;
+        clearTimeout(timer);
+      }
+
+
+    })
+  }
+
+  if (cancelled) {
+    throw new Error("The current job has been skipped");
   }
 
   await connection.set("holding", null);
 
   await emailSender(job.data);
-
+  await markSent(db_pool, job.data.id);
 
 }, { connection });
 
@@ -47,6 +57,6 @@ emailWorker.on("failed", (err) => {
 });
 
 
-export { emailWorker };
+export { emailWorker, cancelJob };
 
 

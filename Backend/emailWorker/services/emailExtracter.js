@@ -3,10 +3,13 @@ const emailExtracter = async (db_pool) => {
 
   const query = `SELECT *
 FROM emails
+WHERE sent = FALSE
 ORDER BY sendAt ASC
 LIMIT 50;`
 
-  let result;
+  let result = null;
+  let start = null;
+  let end = null;
 
   try {
     result = await db_pool.query(query);
@@ -15,13 +18,17 @@ LIMIT 50;`
     throw new Error(error);
   }
 
+  if (result) {
+    start = result.rows[0].sendat;
+    end = result.rows[result.rows.length - 1].sendat;
+    result = result.rows;
+  }
 
-  const start = result.rows[0].sendat;
-  const end = result.rows[result.rows.length - 1].sendat;
 
 
 
-  result = result.rows;
+
+
 
 
   return { start, end, result };
