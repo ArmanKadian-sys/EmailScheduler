@@ -25,12 +25,6 @@ LIMIT 50;`
   }
 
 
-
-
-
-
-
-
   return { start, end, result };
 
 }

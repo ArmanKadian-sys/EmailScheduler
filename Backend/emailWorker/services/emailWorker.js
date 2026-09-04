@@ -6,7 +6,10 @@ import markSent from "./markSent.js"
 
 
 
-const emailQueue = new Queue("email", { connection });
+const emailsQueue = new Queue("emails", { connection });
+await emailsQueue.obliterate({ force: true });
+const emailQueue = new Queue("emails", { connection });
+
 let emailWorker;
 let cancelJob;
 

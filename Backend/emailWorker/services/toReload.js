@@ -10,6 +10,7 @@ const toReload = async (db_pool, connection) => {
   let start, end, result = null;
 
   ({ start, end, result } = await emailExtracter(db_pool));
+  console.log("This was the result which was extracted", result);
 
   if (result) {
     await Promise.all(
