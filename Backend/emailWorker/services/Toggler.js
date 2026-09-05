@@ -14,13 +14,13 @@ let toggler;
 
 toggler = new Worker("notifications", async (job) => {
 
-  console.log("Toggler Ran now");
+  console.log("************************************************************Toggler Ran now********************************************************************************************");
   const endString = await connection.get("end");
   const currentString = job.data.sendAt;
   console.log("toggler ran with endString", endString);
 
   if (!endString) {
-    await connection.set("toggle", JSON.stringify({ status: "1", end: endString }));
+    await connection.set("toggle", JSON.stringify({ status: "1", end: currentString }));
     await connection.set("dbEmpty", false);
     console.log("toggler ran for first email and now paused");
     await toggler.pause();

@@ -54,21 +54,22 @@ while (true) {
                 cancelJob();
             }
             await connection.set("toggle", JSON.stringify({ status: "0", end: null }));
-            toggler.resume();
+            await toggler.resume();
             console.log("Toggler is now resumed");
         }
     }
-    //This is the condition if the queue becomes empty and no new emails inserted in the toggler and pending emails still in the database.
-    else if (toggle && waitingCount == 0 && !dbEmpty) {
+    else if (toggle && waitingCount == 0 && dbEmpty == "false" && !holding) {
+        //This is the condition if the queue becomes empty and no new emails inserted in the toggler and pending emails still in the database.
         console.log("empty queue condition ran");
         console.log("this is the value of toggle", toggle);
 
         let end = await toReload(db_pool, connection); //polling 
+        console.log("queue now reloaded through empty condition");
         if (end) {
             await connection.set("end", end);
         }
         else {
-            console.log("The database is now empty");
+            console.log("No emails to send now");
             await connection.set("dbEmpty", true);
             await connection.set("end", null);
         }

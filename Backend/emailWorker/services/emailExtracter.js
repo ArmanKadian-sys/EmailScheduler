@@ -18,10 +18,15 @@ LIMIT 50;`
     throw new Error(error);
   }
 
-  if (result) {
+  console.log("this is the result", result);
+
+  if (result.rows.length != 0) {
     start = result.rows[0].sendat;
     end = result.rows[result.rows.length - 1].sendat;
     result = result.rows;
+  }
+  else {
+    result = null;
   }
 
 
