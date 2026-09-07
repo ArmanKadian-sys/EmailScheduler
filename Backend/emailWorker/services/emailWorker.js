@@ -15,6 +15,8 @@ let cancelJob;
 
 emailWorker = new Worker("emails", async (job) => {
 
+  console.log("******************email worker recieved the job with id********************", job.data.id);
+
   // Sending Email
   const emailTime = new Date(job.data.sendat).getTime();
   const now = new Date().getTime();
@@ -22,24 +24,23 @@ emailWorker = new Worker("emails", async (job) => {
   let cancelled = false;
 
   if (toHold > 0) {
-    await connection.set("holding", emailTime);
+    await connection.set("holding", JSON.stringify(emailTime));
     await new Promise((resolve) => {
       console.log("Promise pending till", toHold);
       let timer = setTimeout(() => {
         resolve();
       }, toHold);
 
-
       cancelJob = () => {
         cancelled = true;
         clearTimeout(timer);
+        resolve();
       }
-
-
     })
   }
 
   if (cancelled) {
+    await connection.set("holding", null);
     throw new Error("The current job has been skipped");
   }
 
@@ -60,6 +61,6 @@ emailWorker.on("failed", (err) => {
 });
 
 
-export { emailWorker, cancelJob };
+export { emailWorker, cancelJob, emailQueue };
 
 

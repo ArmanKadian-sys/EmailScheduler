@@ -14,6 +14,7 @@ console.log("notification queue drained");
 await connection.del("toggle");
 await connection.del("end");
 await connection.del("dbEmpty");
+await connection.del("holding");
 while (true) {
     console.log("Loop ran");
     let toggle;
@@ -25,10 +26,19 @@ while (true) {
     if (toggle) {
         console.log("Toggle status is ", toggle.status);
     }
+    console.log("This is the value of end", end);
+    console.log("This is the status of the toggler is paused or not:", toggler.isPaused())
     const emailQueue = new Queue("emails", { connection });
     const notificationQueue = new Queue("notifications", { connection });
     const waitingCount = await emailQueue.getWaitingCount();
-    const holding = await connection.get("holding");
+    let holdingTime = await connection.get("holding");
+    if (holdingTime) {
+        holdingTime = JSON.parse(holdingTime);
+        console.log("This the value of holding", holdingTime);
+
+    }
+
+
     const dbEmpty = await connection.get("dbEmpty");
     console.log("dbEmpty", dbEmpty);
     console.log("waiting count", waitingCount);
@@ -44,29 +54,37 @@ while (true) {
         //     continue;
         // }
 
-        const holdingTime = new Date(holding).getTime();
         const noTime = new Date(toggle.end).getTime();
+
         end = await toReload(db_pool, connection);
         console.log("queue is now realoaded");
         await connection.set("end", end);
+
         if (toggle.status == "1") {
+            await connection.set("toggle", JSON.stringify({ status: "0", end: null }));
+            console.log("This is the holding time", holdingTime);
+            console.log("This is the noTime", noTime);
             if (holdingTime && (noTime < holdingTime)) {
                 cancelJob();
+                console.log("*****the current email worker job has been cancelled*****")
             }
-            await connection.set("toggle", JSON.stringify({ status: "0", end: null }));
-            await toggler.resume();
-            console.log("Toggler is now resumed");
+            const resumed = await toggler.resume();
+            console.log("The toggler is now resumed", resumed);
+
+
+
         }
     }
-    else if (toggle && waitingCount == 0 && dbEmpty == "false" && !holding) {
+    else if (toggle && waitingCount == 0 && dbEmpty == "false" && !holdingTime) {
         //This is the condition if the queue becomes empty and no new emails inserted in the toggler and pending emails still in the database.
-        console.log("empty queue condition ran");
+        console.log("************empty queue condition ran*************");
         console.log("this is the value of toggle", toggle);
 
         let end = await toReload(db_pool, connection); //polling 
-        console.log("queue now reloaded through empty condition");
+
         if (end) {
             await connection.set("end", end);
+            console.log("***************queue now reloaded through empty condition***************");
         }
         else {
             console.log("No emails to send now");
