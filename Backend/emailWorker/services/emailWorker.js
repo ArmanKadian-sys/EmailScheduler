@@ -44,7 +44,7 @@ emailWorker = new Worker("emails", async (job) => {
     throw new Error("The current job has been skipped");
   }
 
-  await connection.set("holding", null);
+
 
   await emailSender(job.data);
   await markSent(db_pool, job.data.id);
@@ -53,6 +53,7 @@ emailWorker = new Worker("emails", async (job) => {
 
 
 emailWorker.on("completed", async (job) => {
+  await connection.set("holding", null);
   console.log(`This Job has been completed with id:`, job.data.id);
 });
 

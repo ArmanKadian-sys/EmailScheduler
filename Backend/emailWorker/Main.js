@@ -48,7 +48,7 @@ while (true) {
 
         console.log("Toggler Condition Ran");
 
-        // This is if the toggle saw the bad value of end
+        // This is if the toggle read the bad value of end
         // if (toggle.end >= end) {
         //     toggler.resume();
         //     continue;
@@ -70,8 +70,6 @@ while (true) {
             }
             const resumed = await toggler.resume();
             console.log("The toggler is now resumed", resumed);
-
-
 
         }
     }
