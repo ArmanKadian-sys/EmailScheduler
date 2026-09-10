@@ -39,15 +39,22 @@ emailWorker = new Worker("emails", async (job) => {
     })
   }
 
+
+
+  console.log("**************************************************Came till here******************************************************************");
+
+
+
   if (cancelled) {
+    console.log("***********************************cancelled condition ran************************************************")
     await connection.set("holding", null);
+    await connection.set("sending", null);
     throw new Error("The current job has been skipped");
   }
 
-
-
   await emailSender(job.data);
   await markSent(db_pool, job.data.id);
+
 
 }, { connection });
 

@@ -24,11 +24,10 @@ toggler = new Worker("notifications", async (job) => {
   console.log("toggler ran with endString", endString);
 
   if (!endString) { // This condition only runs if the queue is empty.
+    console.log("Empty end condition of toggler ran");
+    await toggler.pause(true);
     await connection.set("toggle", JSON.stringify({ status: "1", end: currentString }));
     await connection.set("dbEmpty", false);
-    console.log("toggler ran for first email and now paused");
-    await toggler.pause(true);
-    console.log("the toggler has returned now***************************************************************");
     return;
   }
 
@@ -37,19 +36,21 @@ toggler = new Worker("notifications", async (job) => {
 
   if (current < end) {
 
-    const jobs = emailQueue.getJobs()
+    console.log("The current end condition of toggler ran");
 
-    jobs.data.forEach(qjob => {
-      console.log("job comparison has already started");
-      if (job.id == qjob.id) {
-        console.log("Toggler job already in the queue");
-        return;
-      }
-    });
-    console.log("Toggler job not in the queue");
+    // const jobs = emailQueue.getJobs()
+
+    // jobs.data.forEach(qjob => {
+    //   console.log("job comparison has already started");
+    //   if (job.id == qjob.id) {
+    //     console.log("Toggler job already in the queue");
+    //     return;
+    //   }
+    // });
+    // console.log("Toggler job not in the queue");
+    await toggler.pause(true);
     await connection.set("toggle", JSON.stringify({ status: "1", end: currentString }));
     console.log("*********Toggler ran current waali condition and it is paused now*******")
-    await toggler.pause(true);
     return;
   }
 

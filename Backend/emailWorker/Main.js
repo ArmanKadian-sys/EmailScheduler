@@ -56,9 +56,12 @@ while (true) {
 
         const noTime = new Date(toggle.end).getTime();
 
+
         end = await toReload(db_pool, connection);
-        console.log("queue is now realoaded");
+        console.log("queue is now realoaded and the value of end is", end);
         await connection.set("end", end);
+        const get = await connection.get("end");
+        console.log("This is the value of end got by get conenction by Main", get);
 
         if (toggle.status == "1") {
             await connection.set("toggle", JSON.stringify({ status: "0", end: null }));
