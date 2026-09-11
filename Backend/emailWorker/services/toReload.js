@@ -13,6 +13,7 @@ const toReload = async (db_pool, connection) => {
   console.log("This was the result which was extracted", result);
 
   if (result) {
+    await emailQueue.drain();
     await Promise.all(
       result.map(email =>
         emailQueue.add(`email_${email.id}`, email)

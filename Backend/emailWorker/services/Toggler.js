@@ -38,16 +38,18 @@ toggler = new Worker("notifications", async (job) => {
 
     console.log("The current end condition of toggler ran");
 
-    // const jobs = emailQueue.getJobs()
+    const jobs = await emailQueue.getJobs()
 
-    // jobs.data.forEach(qjob => {
-    //   console.log("job comparison has already started");
-    //   if (job.id == qjob.id) {
-    //     console.log("Toggler job already in the queue");
-    //     return;
-    //   }
-    // });
-    // console.log("Toggler job not in the queue");
+    jobs.forEach(qjob => {
+      console.log("job comparison has already started");
+      console.log("This is the job.data.id", job.data.id);
+      console.log("This is the qjob.data.id", qjob.data.id);
+      if (job.data.id == qjob.data.id) {
+        console.log("Toggler job already in the queue");
+        return;
+      }
+    });
+    console.log("Toggler job not in the queue");
     await toggler.pause(true);
     await connection.set("toggle", JSON.stringify({ status: "1", end: currentString }));
     console.log("*********Toggler ran current waali condition and it is paused now*******")

@@ -38,6 +38,11 @@ emailWorker = new Worker("emails", async (job) => {
       }
     })
   }
+  else {
+    console.log("Invalid email time and therefore rejected");
+    await markSent(db_pool, job.data.id);
+    return;
+  }
 
 
 
